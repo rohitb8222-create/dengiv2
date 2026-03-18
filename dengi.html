@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>आई गावदेवी पालखी सोहळा २०२६</title>
+    <link href="https://fonts.googleapis.com/css2?family=Martel:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --saffron: #FF9933;
+            --dark-red: #8B0000;
+            --gold: #FFD700;
+        }
+        body {
+            background-color: #FFF5E6;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+        }
+        .main-card {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            overflow: hidden;
+            border: 3px solid var(--gold);
+        }
+        .header-bg {
+            background: linear-gradient(to bottom, var(--saffron), #FFCC33);
+            padding: 20px;
+            text-align: center;
+            color: var(--dark-red);
+        }
+        .devi-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+            object-fit: cover;
+        }
+        h1 { font-family: 'Martel', serif; margin: 5px 0; font-size: 24px; color: #8B0000; }
+        p.subtitle { font-weight: 800; margin: 0; font-size: 18px; color: #333; text-transform: uppercase; letter-spacing: 1px; }
+
+        .form-area { padding: 25px; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; color: #333; }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus { border-color: var(--saffron); outline: none; }
+
+        .pay-btn {
+            background: var(--dark-red);
+            color: white;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(139, 0, 0, 0.3);
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+        .pay-btn:hover { background: #660000; }
+
+        #success-msg {
+            display: none;
+            background: #d4edda;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            text-align: center;
+            border: 1px solid #c3e6cb;
+        }
+        .download-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-card">
+    <div class="header-bg">
+        <img src="https://img.freepik.com/premium-vector/hindu-god-goddess-durga-ma-vector-illustration_677428-1006.jpg" class="devi-photo" alt="Aai Gavdevi">
+        <h1>🚩 आई गावदेवी प्रसन्न 🚩</h1>
+        <p class="subtitle">संस्थापक गोळिवली <br> पालखी सोहळा २०२६</p>
+    </div>
+
+    <div class="form-area">
+        <div class="input-group">
+            <label>भक्ताचे नाव (Full Name)</label>
+            <input type="text" id="name" placeholder="तुमचे पूर्ण नाव टाका">
+        </div>
+        <div class="input-group">
+            <label>मोबाईल नंबर (Mobile)</label>
+            <input type="number" id="mobile" placeholder="९८XXXXXXXX">
+        </div>
+        <div class="input-group">
+            <label>देणगी रक्कम (Amount ₹)</label>
+            <input type="number" id="amount" placeholder="उदा. ५०१">
+        </div>
+
+        <button class="pay-btn" onclick="processDonation()">देणगी जमा करा व पावती मिळवा</button>
+
+        <div id="success-msg">
+            <b style="color: #155724; font-size: 18px;">✅ धन्यवाद! देणगी प्राप्त झाली.</b><br>
+            <button class="download-btn" onclick="generatePDF()">📥 पावती डाउनलोड करा (PDF)</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let userData = {};
+
+    async function processDonation() {
+        const name = document.getElementById('name').value;
+        const mobile = document.getElementById('mobile').value;
+        const amount = document.getElementById('amount').value;
+
+        if(!name || !amount || !mobile) {
+            alert("कृपया सर्व माहिती अचूक भरा!");
+            return;
+        }
+
+        // माहिती सेट करणे
+        userData = { 
+            name: name, 
+            mobile: mobile, 
+            amount: amount, 
+            date: new Date().toLocaleDateString('mr-IN'), 
+            tid: "GAV" + Math.floor(100000 + Math.random() * 900000) 
+        };
+
+        // तुमची Google Script URL खालीलप्रमाणे आहे
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwWjo_kGLWuHXUwTKsUYy48Bu3j9Zcnl3204JiqAI60WLms5Gzd-YozKk_KQk_Icj0/exec';
+
+        try {
+            // Google Sheet ला डेटा पाठवणे
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(userData)
+            });
+
+            // यशस्वी मॅसेज दाखवणे
+            document.getElementById('success-msg').style.display = 'block';
+            document.querySelector('.pay-btn').style.display = 'none';
+        } catch (e) {
+            alert("काहीतरी चूक झाली आहे, पुन्हा प्रयत्न करा.");
+        }
+    }
+
+    function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // डिझाईन - भगवा रंग
+        doc.setFillColor(255, 153, 51); 
+        doc.rect(0, 0, 210, 45, 'F');
+        
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(22);
+        doc.text("AAI GAVDEVI SANSTHAPAK", 105, 20, null, null, "center");
+        doc.setFontSize(16);
+        doc.text("GOLIVALI PALKHI SOHLA 2026", 105, 32, null, null, "center");
+
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(12);
+        doc.text(`Receipt No: ${userData.tid}`, 20, 60);
+        doc.text(`Date: ${userData.date}`, 150, 60);
+        
+        doc.setDrawColor(255, 153, 51);
+        doc.setLineWidth(1);
+        doc.line(20, 65, 190, 65);
+
+        doc.setFontSize(16);
+        doc.text(`Bhakt Name: ${userData.name}`, 20, 85);
+        doc.text(`Mobile: ${userData.mobile}`, 20, 100);
+        doc.setFont("helvetica", "bold");
+        doc.text(`Donation Amount: Rs. ${userData.amount}/-`, 20, 115);
+
+        doc.setDrawColor(0, 0, 0);
+        doc.rect(15, 50, 180, 85); 
+
+        doc.setFontSize(12);
+        doc.setTextColor(100);
+        doc.text("Nirmata: Aai Gavdevi Palkhi Sohla Samiti", 105, 150, null, null, "center");
+
+        doc.save(`Gavdevi_Receipt_${userData.name}.pdf`);
+    }
+</script>
+
+</body>
+</html>
